@@ -2,6 +2,33 @@
   display: flex;
   flex-direction: column;
   width: 600px;
-  padding-bottom: 20px;
+  padding-bottom: 40px;
   color: var(--text-primary-color);
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.total {
+  display: flex;
+  align-items: center;
+}
+
+.fillings {
+  margin: 0;
+  padding: 4px 0;
+  overflow-y: auto;
+}
+
+.filling_item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.filling_item:last-child {
+  margin-bottom: 0;
 }
