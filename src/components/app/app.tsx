@@ -1,6 +1,16 @@
-import { getIngredients } from '@/utils/api';
+import { useAppDispatch, useAppSelector } from '@/services/hooks';
+import { fetchIngredients } from '@/services/ingredients/ingredients-actions';
+import {
+  selectIngredientsLoading,
+  selectIngredientsError,
+} from '@/services/ingredients/ingredients-slice';
+import { clearOrder, selectOrderNumber } from '@/services/order/order-slice';
+import {
+  clearSelectedIngredient,
+  selectSelectedIngredient,
+} from '@/services/selected-ingredient/selected-ingredient-slice';
 import { Preloader } from '@krgaa/react-developer-burger-ui-components';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 
 import { AppHeader } from '@components/app-header/app-header';
 import { BurgerConstructor } from '@components/burger-constructor/burger-constructor';
@@ -9,68 +19,27 @@ import { IngredientDetails } from '@components/ingredient-details/ingredient-det
 import Modal from '@components/modal/modal';
 import { OrderDetails } from '@components/order-details/order-details';
 
-import type { TIngredient } from '@/utils/types';
-
 import styles from './app.module.css';
 
 export const App = (): React.JSX.Element => {
-  const [ingredients, setIngredients] = useState<TIngredient[]>([]);
-  const [selectedIngredient, setSelectedIngredient] = useState<TIngredient | null>(null);
+  const dispatch = useAppDispatch();
 
-  const [hasError, setHasError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+  const isLoading = useAppSelector(selectIngredientsLoading);
+  const ingredientsError = useAppSelector(selectIngredientsError);
+  const selectedIngredient = useAppSelector(selectSelectedIngredient);
+  const orderNumber = useAppSelector(selectOrderNumber);
 
-  // load ingredients from API on component mount
   useEffect(() => {
-    setIsLoading(true);
-    getIngredients()
-      .then((data) => {
-        setIngredients(data);
-      })
-      .catch((err: unknown) => {
-        const message =
-          err instanceof Error ? err.message : 'Произошла неизвестная ошибка';
+    void dispatch(fetchIngredients());
+  }, [dispatch]);
 
-        setHasError(message);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  }, []);
+  const handleCloseIngredientModal = useCallback(() => {
+    dispatch(clearSelectedIngredient());
+  }, [dispatch]);
 
-  const handleOpenOrderModal = useCallback(() => setIsOrderModalOpen(true), []);
-  const handleCloseOrderModal = useCallback(() => setIsOrderModalOpen(false), []);
-  const handleCloseIngredientModal = useCallback(() => setSelectedIngredient(null), []);
-
-  // demo one bun
-  const bun = useMemo(
-    () => ingredients.find((i) => i.type === 'bun') ?? null,
-    [ingredients]
-  );
-
-  // demo six fillings
-  const fillings = useMemo(
-    () => ingredients.filter((i) => i.type !== 'bun').slice(0, 6),
-    [ingredients]
-  );
-
-  // calculate total price
-  const totalPrice = useMemo(() => {
-    const bunPrice = bun ? bun.price * 2 : 0;
-    const fillingsPrice = fillings.reduce((sum, item) => sum + item.price, 0);
-    return bunPrice + fillingsPrice;
-  }, [bun, fillings]);
-
-  // calculate ingredient counts
-  const ingredientCounts = useMemo(() => {
-    const counts: Record<string, number> = {};
-    if (bun) counts[bun._id] = 2;
-    fillings.forEach((i) => {
-      counts[i._id] = (counts[i._id] ?? 0) + 1;
-    });
-    return counts;
-  }, [bun, fillings]);
+  const handleCloseOrderModal = useCallback(() => {
+    dispatch(clearOrder());
+  }, [dispatch]);
 
   if (isLoading)
     return (
@@ -79,7 +48,7 @@ export const App = (): React.JSX.Element => {
       </div>
     );
 
-  if (hasError) {
+  if (ingredientsError) {
     return (
       <p
         className={`${styles.app} text text_type_main-medium`}
@@ -87,7 +56,7 @@ export const App = (): React.JSX.Element => {
       >
         Возникли космические неполадки :(
         <br />
-        Попробуйте обновить страницу
+        {ingredientsError}
       </p>
     );
   }
@@ -99,27 +68,18 @@ export const App = (): React.JSX.Element => {
         Соберите бургер
       </h1>
       <main className={`${styles.main} pl-5 pr-5`}>
-        <BurgerIngredients
-          ingredients={ingredients}
-          ingredientCounts={ingredientCounts}
-          onIngredientClick={setSelectedIngredient}
-        />
-        <BurgerConstructor
-          bun={bun}
-          fillings={fillings}
-          totalPrice={totalPrice}
-          onOrderClick={() => handleOpenOrderModal()}
-        />
+        <BurgerIngredients />
+        <BurgerConstructor />
       </main>
 
-      {isOrderModalOpen && (
+      {orderNumber !== null && (
         <Modal onClose={handleCloseOrderModal}>
           <OrderDetails />
         </Modal>
       )}
 
       {selectedIngredient && (
-        <Modal title="Детали ингредиента" onClose={() => handleCloseIngredientModal()}>
+        <Modal title="Детали ингредиента" onClose={handleCloseIngredientModal}>
           <IngredientDetails ingredient={selectedIngredient} />
         </Modal>
       )}
