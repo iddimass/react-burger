@@ -1,14 +1,17 @@
-import { MOCK_ORDER_ID } from '@/utils/constants';
+import { useAppSelector } from '@/services/hooks';
+import { selectOrderNumber } from '@/services/order/order-slice';
 
 import doneIcon from '../../images/done.svg';
 
 import styles from './order-details.module.css';
 
 export const OrderDetails = (): React.JSX.Element => {
+  const orderNumber = useAppSelector(selectOrderNumber);
+
   return (
     <section className={`${styles.container} mb-15`}>
       <p className={`${styles.order_id} text text_type_digits-large mb-8 mt-9`}>
-        {MOCK_ORDER_ID}
+        {orderNumber}
       </p>
       <p className="text text_type_main-medium mb-15">идентификатор заказа</p>
       <div className="mb-15">

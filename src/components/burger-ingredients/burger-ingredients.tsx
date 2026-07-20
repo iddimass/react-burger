@@ -1,72 +1,93 @@
-import { Counter, CurrencyIcon, Tab } from '@krgaa/react-developer-burger-ui-components';
+import { selectIngredientCounts } from '@/services/burger-constructor/constructor-slice';
+import { useAppSelector } from '@/services/hooks';
+import { selectIngredients } from '@/services/ingredients/ingredients-slice';
+import { Tab } from '@krgaa/react-developer-burger-ui-components';
 import { useRef, useState } from 'react';
+
+import IngredientCard from './ingredient-card';
 
 import type { TIngredient } from '@utils/types';
 
 import styles from './burger-ingredients.module.css';
 
-type TBurgerIngredientsProps = {
-  ingredients: TIngredient[];
-  ingredientCounts: Record<string, number>;
-  onIngredientClick: (ingredient: TIngredient) => void;
-};
-
-export const BurgerIngredients = ({
-  ingredients,
-  ingredientCounts,
-  onIngredientClick,
-}: TBurgerIngredientsProps): React.JSX.Element => {
+export const BurgerIngredients = (): React.JSX.Element => {
   const [currentTab, setCurrentTab] = useState('bun');
 
   const listRef = useRef<HTMLDivElement>(null);
+  const bunRef = useRef<HTMLElement>(null);
+  const sauceRef = useRef<HTMLElement>(null);
+  const mainRef = useRef<HTMLElement>(null);
+
+  const ingredients = useAppSelector(selectIngredients);
+  const ingredientCounts = useAppSelector(selectIngredientCounts);
 
   const buns = ingredients.filter((i) => i.type === 'bun');
   const sauces = ingredients.filter((i) => i.type === 'sauce');
   const mains = ingredients.filter((i) => i.type === 'main');
 
+  const handleScroll = (): void => {
+    if (!listRef.current || !bunRef.current || !sauceRef.current || !mainRef.current)
+      return;
+
+    const containerTop = listRef.current.getBoundingClientRect().top;
+
+    const sections = [
+      {
+        type: 'bun',
+        distance: Math.abs(bunRef.current.getBoundingClientRect().top - containerTop),
+      },
+      {
+        type: 'sauce',
+        distance: Math.abs(sauceRef.current.getBoundingClientRect().top - containerTop),
+      },
+      {
+        type: 'main',
+        distance: Math.abs(mainRef.current.getBoundingClientRect().top - containerTop),
+      },
+    ];
+
+    const closestSection = sections.reduce((closest, section) =>
+      section.distance < closest.distance ? section : closest
+    );
+
+    setCurrentTab(closestSection.type);
+  };
+
   // render group of product's
   const renderGroup = (
     title: string,
     items: TIngredient[],
-    type: string
+    sectionRef: React.RefObject<HTMLElement | null>
   ): React.JSX.Element => (
-    <section data-type={type} className="mt-10">
+    <section ref={sectionRef} className="mt-10">
       <h2 className="text text_type_main-medium mb-6">{title}</h2>
-      <ul className={styles.grid}>{items.map(renderCard)}</ul>
+
+      <ul className={styles.grid}>
+        {items.map((ingredient) => (
+          <IngredientCard
+            key={ingredient._id}
+            ingredient={ingredient}
+            count={ingredientCounts[ingredient._id] ?? 0}
+          />
+        ))}
+      </ul>
     </section>
   );
-
-  // render product item
-  const renderCard = (ingredient: TIngredient): React.JSX.Element => {
-    const count = ingredientCounts[ingredient._id] ?? 0;
-    return (
-      <li
-        key={ingredient._id}
-        className={styles.card}
-        onClick={() => onIngredientClick(ingredient)}
-      >
-        <div className={styles.image_wrapper}>
-          <img className={styles.image} src={ingredient.image} alt={ingredient.name} />
-          {count > 0 && (
-            <Counter count={count} size="default" extraClass={styles.counter} />
-          )}
-        </div>
-        <div className={`${styles.price} mt-1 mb-1`}>
-          <span className="text text_type_digits-default mr-2">{ingredient.price}</span>
-          <CurrencyIcon type="primary" />
-        </div>
-        <p className={`${styles.name} text text_type_main-default`}>{ingredient.name}</p>
-      </li>
-    );
-  };
 
   // tab click processing + scroll
   const handleTabClick = (value: string): void => {
     setCurrentTab(value);
-    const section = listRef.current?.querySelector<HTMLElement>(
-      `[data-type="${value}"]`
-    );
-    section?.scrollIntoView({ behavior: 'smooth' });
+
+    const refs: Record<string, React.RefObject<HTMLElement | null>> = {
+      bun: bunRef,
+      sauce: sauceRef,
+      main: mainRef,
+    };
+
+    refs[value]?.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    });
   };
 
   return (
@@ -84,10 +105,14 @@ export const BurgerIngredients = ({
           </Tab>
         </ul>
       </nav>
-      <div ref={listRef} className={`${styles.scroll_area} custom-scroll`}>
-        {renderGroup('Булки', buns, 'bun')}
-        {renderGroup('Начинки', mains, 'main')}
-        {renderGroup('Соусы', sauces, 'sauce')}
+      <div
+        ref={listRef}
+        className={`${styles.scroll_area} custom-scroll`}
+        onScroll={handleScroll}
+      >
+        {renderGroup('Булки', buns, bunRef)}
+        {renderGroup('Начинки', mains, mainRef)}
+        {renderGroup('Соусы', sauces, sauceRef)}
       </div>
     </section>
   );
