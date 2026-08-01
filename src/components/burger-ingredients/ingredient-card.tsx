@@ -1,8 +1,8 @@
 import { Counter, CurrencyIcon } from '@krgaa/react-developer-burger-ui-components';
 import { useDrag, type DragSourceMonitor } from 'react-dnd';
+import { Link, useLocation } from 'react-router-dom';
 
-import { useAppDispatch } from '@services/hooks';
-import { setSelectedIngredient } from '@services/selected-ingredient/selected-ingredient-slice';
+import { getIngredientRoute } from '@utils/constants';
 
 import type { TIngredient } from '@utils/types';
 
@@ -23,7 +23,7 @@ const IngredientCard = ({
   ingredient,
   count,
 }: TIngredientCardProps): React.JSX.Element => {
-  const dispatch = useAppDispatch();
+  const location = useLocation();
 
   const [{ isDragging }, drag] = useDrag<TIngredient, void, TIngredientDragState>(
     () => ({
@@ -47,22 +47,27 @@ const IngredientCard = ({
       ref={setDragRef}
       className={styles.card}
       style={{ opacity: isDragging ? 0.5 : 1 }}
-      onClick={() => dispatch(setSelectedIngredient(ingredient))}
     >
-      <div className={styles.image_wrapper}>
-        <img className={styles.image} src={ingredient.image} alt={ingredient.name} />
+      <Link
+        to={getIngredientRoute(ingredient._id)}
+        state={{ backgroundLocation: location }}
+        className={styles.link}
+      >
+        <div className={styles.image_wrapper}>
+          <img className={styles.image} src={ingredient.image} alt={ingredient.name} />
 
-        {count > 0 && (
-          <Counter count={count} size="default" extraClass={styles.counter} />
-        )}
-      </div>
+          {count > 0 && (
+            <Counter count={count} size="default" extraClass={styles.counter} />
+          )}
+        </div>
 
-      <div className={`${styles.price} mt-1 mb-1`}>
-        <span className="text text_type_digits-default mr-2">{ingredient.price}</span>
-        <CurrencyIcon type="primary" />
-      </div>
+        <div className={`${styles.price} mt-1 mb-1`}>
+          <span className="text text_type_digits-default mr-2">{ingredient.price}</span>
+          <CurrencyIcon type="primary" />
+        </div>
 
-      <p className={`${styles.name} text text_type_main-default`}>{ingredient.name}</p>
+        <p className={`${styles.name} text text_type_main-default`}>{ingredient.name}</p>
+      </Link>
     </li>
   );
 };

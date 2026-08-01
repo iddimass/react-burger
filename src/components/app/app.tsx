@@ -1,3 +1,4 @@
+import { IngredientModal, IngredientPage } from '@/pages/ingredient/ingredient';
 import { useAppDispatch, useAppSelector } from '@/services/hooks';
 import { fetchIngredients } from '@/services/ingredients/ingredients-actions';
 import {
@@ -5,43 +6,55 @@ import {
   selectIngredientsError,
 } from '@/services/ingredients/ingredients-slice';
 import { clearOrder, selectOrderNumber } from '@/services/order/order-slice';
-import {
-  clearSelectedIngredient,
-  selectSelectedIngredient,
-} from '@/services/selected-ingredient/selected-ingredient-slice';
+import { checkUserAuth } from '@/services/user/user-actions';
+import { selectIsAuthChecked } from '@/services/user/user-slice';
+import { AppRoutes } from '@/utils/constants';
 import { Preloader } from '@krgaa/react-developer-burger-ui-components';
 import { useCallback, useEffect } from 'react';
+import { Route, Routes, useLocation, type Location } from 'react-router-dom';
 
 import { AppHeader } from '@components/app-header/app-header';
-import { BurgerConstructor } from '@components/burger-constructor/burger-constructor';
-import { BurgerIngredients } from '@components/burger-ingredients/burger-ingredients';
-import { IngredientDetails } from '@components/ingredient-details/ingredient-details';
 import Modal from '@components/modal/modal';
 import { OrderDetails } from '@components/order-details/order-details';
+import { ProtectedRoute } from '@components/protected-route/protected-route';
+import { ForgotPasswordPage } from '@pages/auth/forgot-password/forgot-password';
+import { LoginPage } from '@pages/auth/login/login';
+import { RegisterPage } from '@pages/auth/register/register';
+import { ResetPasswordPage } from '@pages/auth/reset-password/reset-password';
+import { FeedPage } from '@pages/feed/feed';
+import { HomePage } from '@pages/home/home';
+import { NotFoundPage } from '@pages/not-found/not-found';
+import { ProfileForm } from '@pages/profile/form/form';
+import { ProfileOrdersPage } from '@pages/profile/orders/orders';
+import { ProfilePage } from '@pages/profile/profile';
 
 import styles from './app.module.css';
 
+type TAppLocationState = {
+  backgroundLocation?: Location;
+};
+
 export const App = (): React.JSX.Element => {
   const dispatch = useAppDispatch();
+  const location = useLocation();
+  const locationState = location.state as TAppLocationState | null;
+  const backgroundLocation = locationState?.backgroundLocation;
 
   const isLoading = useAppSelector(selectIngredientsLoading);
   const ingredientsError = useAppSelector(selectIngredientsError);
-  const selectedIngredient = useAppSelector(selectSelectedIngredient);
   const orderNumber = useAppSelector(selectOrderNumber);
+  const isAuthChecked = useAppSelector(selectIsAuthChecked);
 
   useEffect(() => {
     void dispatch(fetchIngredients());
-  }, [dispatch]);
-
-  const handleCloseIngredientModal = useCallback(() => {
-    dispatch(clearSelectedIngredient());
+    void dispatch(checkUserAuth());
   }, [dispatch]);
 
   const handleCloseOrderModal = useCallback(() => {
     dispatch(clearOrder());
   }, [dispatch]);
 
-  if (isLoading)
+  if (isLoading || !isAuthChecked)
     return (
       <div className={styles.app}>
         <Preloader />
@@ -64,23 +77,68 @@ export const App = (): React.JSX.Element => {
   return (
     <div className={styles.app}>
       <AppHeader />
-      <h1 className={`${styles.title} text text_type_main-large mt-10 mb-5 pl-5`}>
-        Соберите бургер
-      </h1>
-      <main className={`${styles.main} pl-5 pr-5`}>
-        <BurgerIngredients />
-        <BurgerConstructor />
-      </main>
+      <Routes location={backgroundLocation ?? location}>
+        <Route path={AppRoutes.HOME} element={<HomePage />} />
+        <Route path={AppRoutes.INGREDIENT} element={<IngredientPage />} />
+        <Route path={AppRoutes.FEED} element={<FeedPage />} />
+
+        <Route
+          path={AppRoutes.LOGIN}
+          element={
+            <ProtectedRoute onlyUnAuth>
+              <LoginPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path={AppRoutes.REGISTER}
+          element={
+            <ProtectedRoute onlyUnAuth>
+              <RegisterPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path={AppRoutes.FORGOT_PASSWORD}
+          element={
+            <ProtectedRoute onlyUnAuth>
+              <ForgotPasswordPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path={AppRoutes.RESET_PASSWORD}
+          element={
+            <ProtectedRoute onlyUnAuth>
+              <ResetPasswordPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path={AppRoutes.PROFILE}
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<ProfileForm />} />
+          <Route path="orders" element={<ProfileOrdersPage />} />
+        </Route>
+
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+
+      {backgroundLocation && (
+        <Routes>
+          <Route path={AppRoutes.INGREDIENT} element={<IngredientModal />} />
+        </Routes>
+      )}
 
       {orderNumber !== null && (
         <Modal onClose={handleCloseOrderModal}>
           <OrderDetails />
-        </Modal>
-      )}
-
-      {selectedIngredient && (
-        <Modal title="Детали ингредиента" onClose={handleCloseIngredientModal}>
-          <IngredientDetails ingredient={selectedIngredient} />
         </Modal>
       )}
     </div>
