@@ -24,3 +24,30 @@ export type TOrderResponse = {
     number: number;
   };
 };
+
+export type TUser = {
+  email: string;
+  name: string;
+};
+
+export type TUserUpdate = TUser & {
+  password: string;
+};
+
+export type TAuthResponse = {
+  success: boolean;
+  accessToken: string;
+  refreshToken: string;
+};
+
+export type TUserResponse = {
+  success: boolean;
+  user: TUser;
+};
+
+export type TAuthUserResponse = TAuthResponse & TUserResponse;
+
+export type TBasicResponse = {
+  success: boolean;
+  message: string;
+};

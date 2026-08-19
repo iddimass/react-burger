@@ -1,0 +1,17 @@
+.content {
+  flex: 1;
+}
+
+.form {
+  width: 480px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 20px;
+}
+
+.error {
+  color: var(--colors-interface-error);
+}

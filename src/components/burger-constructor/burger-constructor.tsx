@@ -11,7 +11,8 @@ import {
   selectOrderError,
   selectOrderLoading,
 } from '@/services/order/order-slice';
-import { DraggableTypes } from '@/utils/constants';
+import { selectIsAuthenticated } from '@/services/user/user-slice';
+import { AppRoutes, DraggableTypes } from '@/utils/constants';
 import {
   Button,
   ConstructorElement,
@@ -19,6 +20,7 @@ import {
   Preloader,
 } from '@krgaa/react-developer-burger-ui-components';
 import { useDrop, type DropTargetMonitor } from 'react-dnd';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { FillingConstructor } from './filling-constructor';
 
@@ -37,12 +39,15 @@ type TFillingsDropState = {
 
 export const BurgerConstructor = (): React.JSX.Element => {
   const dispatch = useAppDispatch();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const bun = useAppSelector(selectConstructorBun);
   const fillings = useAppSelector(selectConstructorIngredients);
   const totalPrice = useAppSelector(selectTotalPrice);
   const isOrderLoading = useAppSelector(selectOrderLoading);
   const orderError = useAppSelector(selectOrderError);
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
 
   const [topBunDropState, topBunDrop] = useDrop<TIngredient, void, TDropState>(
     () => ({
@@ -126,6 +131,13 @@ export const BurgerConstructor = (): React.JSX.Element => {
 
   const handleCreateOrder = (): void => {
     if (!bun || isOrderLoading) return;
+
+    if (!isAuthenticated) {
+      void navigate(AppRoutes.LOGIN, {
+        state: { from: location },
+      });
+      return;
+    }
 
     dispatch(clearOrderError());
 
