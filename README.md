@@ -36,3 +36,6 @@
 		'@utils': path.resolve(__dirname, './src/utils'),
 	},
 ```
+
+
+Проект изначально разрабатывался на TypeScript, поэтому дополнительная миграция с JavaScript не потребовалась.
