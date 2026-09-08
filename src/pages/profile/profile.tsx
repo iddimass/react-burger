@@ -1,4 +1,4 @@
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { NavLink, Outlet, useMatch, useNavigate } from 'react-router-dom';
 
 import { useAppDispatch, useAppSelector } from '@services/hooks';
 import { logoutUser } from '@services/user/user-actions';
@@ -10,6 +10,7 @@ import styles from './profile.module.css';
 export const ProfilePage = (): React.JSX.Element => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const isOrdersPage = useMatch(AppRoutes.PROFILE_ORDERS) !== null;
   const isLoading = useAppSelector(selectUserLoading);
 
   const handleLogout = (): void => {
@@ -61,7 +62,9 @@ export const ProfilePage = (): React.JSX.Element => {
         </button>
 
         <p className="text text_type_main-default text_color_inactive mt-20">
-          В этом разделе вы можете изменить свои персональные данные
+          {isOrdersPage
+            ? 'В этом разделе вы можете просмотреть свою историю заказов'
+            : 'В этом разделе вы можете изменить свои персональные данные'}
         </p>
       </nav>
 

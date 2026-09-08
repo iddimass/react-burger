@@ -5,7 +5,7 @@ import {
   selectIngredientsLoading,
   selectIngredientsError,
 } from '@/services/ingredients/ingredients-slice';
-import { clearOrder, selectOrderNumber } from '@/services/order/order-slice';
+import { clearOrder, selectOrderModalOpen } from '@/services/order/order-slice';
 import { checkUserAuth } from '@/services/user/user-actions';
 import { selectIsAuthChecked } from '@/services/user/user-slice';
 import { AppRoutes } from '@/utils/constants';
@@ -24,6 +24,7 @@ import { ResetPasswordPage } from '@pages/auth/reset-password/reset-password';
 import { FeedPage } from '@pages/feed/feed';
 import { HomePage } from '@pages/home/home';
 import { NotFoundPage } from '@pages/not-found/not-found';
+import { OrderModal, OrderPage } from '@pages/order/order';
 import { ProfileForm } from '@pages/profile/form/form';
 import { ProfileOrdersPage } from '@pages/profile/orders/orders';
 import { ProfilePage } from '@pages/profile/profile';
@@ -42,7 +43,7 @@ export const App = (): React.JSX.Element => {
 
   const isLoading = useAppSelector(selectIngredientsLoading);
   const ingredientsError = useAppSelector(selectIngredientsError);
-  const orderNumber = useAppSelector(selectOrderNumber);
+  const isOrderModalOpen = useAppSelector(selectOrderModalOpen);
   const isAuthChecked = useAppSelector(selectIsAuthChecked);
 
   useEffect(() => {
@@ -81,6 +82,7 @@ export const App = (): React.JSX.Element => {
         <Route path={AppRoutes.HOME} element={<HomePage />} />
         <Route path={AppRoutes.INGREDIENT} element={<IngredientPage />} />
         <Route path={AppRoutes.FEED} element={<FeedPage />} />
+        <Route path={AppRoutes.FEED_ORDER} element={<OrderPage />} />
 
         <Route
           path={AppRoutes.LOGIN}
@@ -127,16 +129,34 @@ export const App = (): React.JSX.Element => {
           <Route path="orders" element={<ProfileOrdersPage />} />
         </Route>
 
+        <Route
+          path={AppRoutes.PROFILE_ORDER}
+          element={
+            <ProtectedRoute>
+              <OrderPage />
+            </ProtectedRoute>
+          }
+        />
+
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
 
       {backgroundLocation && (
         <Routes>
           <Route path={AppRoutes.INGREDIENT} element={<IngredientModal />} />
+          <Route path={AppRoutes.FEED_ORDER} element={<OrderModal />} />
+          <Route
+            path={AppRoutes.PROFILE_ORDER}
+            element={
+              <ProtectedRoute>
+                <OrderModal />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       )}
 
-      {orderNumber !== null && (
+      {isOrderModalOpen && (
         <Modal onClose={handleCloseOrderModal}>
           <OrderDetails />
         </Modal>

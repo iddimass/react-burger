@@ -1,0 +1,12 @@
+.container {
+  flex: 1;
+  min-width: 0;
+  height: calc(100vh - 208px);
+}
+
+.message {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+}
