@@ -6,6 +6,8 @@ import type {
   TAuthUserResponse,
   TBasicResponse,
   TIngredient,
+  TOrder,
+  TOrderDetailsResponse,
   TOrderResponse,
   TUserResponse,
   TUserUpdate,
@@ -142,6 +144,13 @@ export const createOrderRequest = (ingredients: string[]): Promise<TOrderRespons
   }).catch((error: unknown) => {
     throw normalizeError(error, 'Не удалось оформить заказ');
   });
+
+export const getOrderByIdRequest = (orderId: string): Promise<TOrder> =>
+  request<TOrderDetailsResponse>(`orders/${encodeURIComponent(orderId)}`)
+    .then((response) => response.order)
+    .catch((error: unknown) => {
+      throw normalizeError(error, 'Не удалось получить информацию о заказе :(');
+    });
 
 export const registerRequest = (
   email: string,

@@ -2,6 +2,25 @@
   display: flex;
   flex: 1;
   flex-direction: column;
+  box-sizing: border-box;
+  width: 1240px;
+  min-height: 0;
+  margin: 40px auto 0;
+  padding-bottom: 40px;
+}
+
+.content {
+  display: grid;
+  grid-template-columns: 600px 580px;
+  flex: 1;
+  gap: 60px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.message {
+  display: flex;
+  flex: 1;
   justify-content: center;
   align-items: center;
 }

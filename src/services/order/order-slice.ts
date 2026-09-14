@@ -5,12 +5,14 @@ import { createOrder } from './order-actions';
 type TOrderState = {
   number: number | null;
   isLoading: boolean;
+  isModalOpen: boolean;
   error: string | null;
 };
 
 const initialState: TOrderState = {
   number: null,
   isLoading: false,
+  isModalOpen: false,
   error: null,
 };
 
@@ -20,6 +22,7 @@ export const orderSlice = createSlice({
   reducers: {
     clearOrder: (state) => {
       state.number = null;
+      state.isModalOpen = false;
       state.error = null;
     },
 
@@ -30,12 +33,14 @@ export const orderSlice = createSlice({
   selectors: {
     selectOrderNumber: (state) => state.number,
     selectOrderLoading: (state) => state.isLoading,
+    selectOrderModalOpen: (state) => state.isModalOpen,
     selectOrderError: (state) => state.error,
   },
   extraReducers: (builder) => {
     builder
       .addCase(createOrder.pending, (state) => {
         state.isLoading = true;
+        state.isModalOpen = true;
         state.error = null;
         state.number = null;
       })
@@ -45,6 +50,7 @@ export const orderSlice = createSlice({
       })
       .addCase(createOrder.rejected, (state, action) => {
         state.isLoading = false;
+        state.isModalOpen = false;
         state.error =
           typeof action.payload === 'string'
             ? action.payload
@@ -54,5 +60,9 @@ export const orderSlice = createSlice({
 });
 
 export const { clearOrder, clearOrderError } = orderSlice.actions;
-export const { selectOrderNumber, selectOrderLoading, selectOrderError } =
-  orderSlice.selectors;
+export const {
+  selectOrderError,
+  selectOrderLoading,
+  selectOrderModalOpen,
+  selectOrderNumber,
+} = orderSlice.selectors;

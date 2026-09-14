@@ -1,0 +1,84 @@
+.card {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 24px;
+  background: #1c1c21;
+  border-radius: 40px;
+  box-shadow:
+    0 0 1px rgb(0 0 0 / 4%),
+    0 4px 8px rgb(0 0 0 / 4%),
+    0 16px 24px rgb(0 0 0 / 4%);
+}
+
+.link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.header,
+.footer,
+.price {
+  display: flex;
+  align-items: center;
+}
+
+.header,
+.footer {
+  justify-content: space-between;
+}
+
+.ingredients {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ingredient {
+  position: relative;
+  display: flex;
+  box-sizing: border-box;
+  width: 64px;
+  height: 64px;
+  margin-left: -16px;
+  overflow: hidden;
+  background:
+    linear-gradient(#131316, #131316) padding-box,
+    linear-gradient(45deg, #801ab2, #4c4cff) border-box;
+  border: 2px solid transparent;
+  border-radius: 50%;
+}
+
+.ingredient:first-child {
+  margin-left: 0;
+}
+
+.ingredient_image {
+  width: 112px;
+  max-width: none;
+  height: 56px;
+  margin: auto auto auto -26px;
+  object-fit: cover;
+}
+
+.more {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgb(28 28 33 / 60%);
+}
+
+.price {
+  flex-shrink: 0;
+}
+
+.status {
+  color: #f2f2f3;
+}
+
+.status_done {
+  color: #0cc;
+}
