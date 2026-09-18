@@ -50,7 +50,7 @@ export const FillingConstructor = ({
   drag(drop(ref));
 
   return (
-    <li ref={ref} className={styles.filling}>
+    <li ref={ref} className={styles.filling} data-testid="constructor-filling">
       <DragIcon type="secondary" />
       <ConstructorElement
         thumbnail={ingredient.image}

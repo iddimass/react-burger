@@ -1,15 +1,23 @@
 .title {
-  width: 100%;
-  max-width: 1260px;
-  margin-right: auto;
-  margin-left: auto;
+  flex-shrink: 0;
 }
 
 .main {
   display: flex;
-  justify-content: space-between;
-  width: 1240px;
-  height: 100%;
+  flex: 1;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1280px;
+  min-height: 0;
   margin: 0 auto;
+  overflow: hidden;
+}
+
+.content {
+  display: flex;
+  flex: 1;
+  justify-content: space-between;
+  min-height: 0;
   overflow: hidden;
 }
