@@ -27,10 +27,23 @@ const Modal = ({ title, onClose, children }: TModalProps): React.JSX.Element => 
   return createPortal(
     <>
       <ModalOverlay onClick={onClose} />
-      <div className={`${styles.modal} pb-15 pl-10 pr-10 pt-10`}>
+      <div
+        className={`${styles.modal} pb-15 pl-10 pr-10 pt-10`}
+        data-testid="modal"
+        role="dialog"
+        aria-modal="true"
+      >
         <div className={`${styles.header}`}>
           {title && <h2 className={`text text_type_main-large`}>{title}</h2>}
-          <CloseIcon type="primary" onClick={onClose} className={styles.close} />
+          <button
+            className={styles.close}
+            type="button"
+            aria-label="Закрыть"
+            data-testid="modal-close"
+            onClick={onClose}
+          >
+            <CloseIcon type="primary" />
+          </button>
         </div>
         {children}
       </div>

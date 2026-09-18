@@ -151,6 +151,7 @@ export const BurgerConstructor = (): React.JSX.Element => {
       <div
         ref={setTopBunDropRef}
         className={`${styles.bun_drop_zone} mb-4 ${topBunDropState.isOver ? styles.bun_drop_active : ''}`}
+        data-testid="constructor-bun-top"
       >
         {displayedBun ? (
           <div className={`ml-8`}>
@@ -180,6 +181,7 @@ export const BurgerConstructor = (): React.JSX.Element => {
             ? styles.fillings_drop_empty
             : styles.fillings_drop_filled
         } ${isFillingOver ? styles.fillings_drop_active : ''}`}
+        data-testid="constructor-fillings"
       >
         {fillings.length > 0 ? (
           <ul className={`${styles.fillings} custom-scroll`}>
@@ -204,6 +206,7 @@ export const BurgerConstructor = (): React.JSX.Element => {
       <div
         ref={setBottomBunDropRef}
         className={`${styles.bun_drop_zone} mt-4 ${bottomBunDropState.isOver ? styles.bun_drop_active : ''}`}
+        data-testid="constructor-bun-bottom"
       >
         {displayedBun ? (
           <div className={`ml-8`}>
@@ -236,7 +239,9 @@ export const BurgerConstructor = (): React.JSX.Element => {
 
       <div className={`${styles.footer} mt-10 mr-4`}>
         <div className={`mr-10`}>
-          <span className="text text_type_digits-medium mr-2">{totalPrice}</span>
+          <span className="text text_type_digits-medium mr-2" data-testid="total-price">
+            {totalPrice}
+          </span>
           <CurrencyIcon type="primary" />
         </div>
 

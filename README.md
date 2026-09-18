@@ -1,5 +1,10 @@
 # Стартер на TypeScript для проекта Stellar Burger
 
+## Деплой
+
+Приложение доступно по ссылке:  
+[Stellar Burgers](https://iddimass.github.io/react-burger/)
+
 ## Процедура создания коммита с проверками
 
 При создании коммита автоматически запускаются проверка линтерами `stylelint`, `eslint` и форматирование `prettier`.

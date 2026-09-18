@@ -16,6 +16,10 @@
 }
 
 .close {
+  display: flex;
   margin-left: auto;
+  padding: 0;
+  background: transparent;
+  border: 0;
   cursor: pointer;
 }

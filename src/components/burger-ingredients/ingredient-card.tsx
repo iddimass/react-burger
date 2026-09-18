@@ -46,6 +46,7 @@ const IngredientCard = ({
     <li
       ref={setDragRef}
       className={styles.card}
+      data-testid={`ingredient-${ingredient._id}`}
       style={{ opacity: isDragging ? 0.5 : 1 }}
     >
       <Link

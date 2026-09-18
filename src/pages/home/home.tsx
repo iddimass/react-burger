@@ -8,17 +8,17 @@ import styles from './home.module.css';
 
 export const HomePage = (): React.JSX.Element => {
   return (
-    <>
-      <h1 className={`${styles.title} text text_type_main-large mt-10 mb-5 pl-5`}>
+    <main className={`${styles.main} pl-5 pr-5`}>
+      <h1 className={`${styles.title} text text_type_main-large mt-10 mb-5`}>
         Соберите бургер
       </h1>
 
       <DndProvider backend={HTML5Backend}>
-        <main className={`${styles.main} pl-5 pr-5`}>
+        <div className={styles.content}>
           <BurgerIngredients />
           <BurgerConstructor />
-        </main>
+        </div>
       </DndProvider>
-    </>
+    </main>
   );
 };
